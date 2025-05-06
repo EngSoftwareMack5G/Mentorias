@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic[email]
+psycopg2-binary  # Driver síncrono, asyncpg é melhor para async, mas psycopg2 é mais simples para iniciar se não for usar ORM async
+asyncpg          # Driver assíncrono para PostgreSQL (RECOMENDADO com FastAPI)
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]  # Para hashing de senhas, embora não estejamos criando usuários aqui
+pydantic_settings
