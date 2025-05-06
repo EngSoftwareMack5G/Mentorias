@@ -65,6 +65,7 @@ async def list_mentorias_for_mentor(
 )
 async def get_single_mentoria(
     mentoria_id: int = Path(..., ge=1),
+    current_user: TokenData = Depends(get_current_user),
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     mentoria = await mentoria_crud.get_mentoria_by_id(
