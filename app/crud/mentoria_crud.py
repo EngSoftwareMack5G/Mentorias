@@ -184,7 +184,7 @@ async def add_mentorado_to_mentoria(
 async def remove_mentorado_from_mentoria(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
     mentoria_id: int,
-    mentorado_email_obj: MentoradoEmail,
+    mentorado_email_obj: Optional[MentoradoEmail],
     current_user_email: str,
     current_user_type: UserType
 ) -> bool:
@@ -194,7 +194,7 @@ async def remove_mentorado_from_mentoria(
                 "SELECT mentor_email FROM mentorias WHERE id = $1;",
                 mentoria_id
             )
-            if not current_user_email:
+            if not mentorado_email_obj:
                 return False
 
             if not mentoria_record or mentoria_record['mentor_email'] != current_user_email:

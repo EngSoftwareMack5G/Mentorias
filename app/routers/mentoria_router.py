@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Path, Query
-from typing import List
+from typing import List, Optional
 # Importe _AsyncGeneratorContextManager para type hinting se não estiver globalmente disponível
 from contextlib import _AsyncGeneratorContextManager
 import asyncpg # Para o type hint da dependência de conexão
@@ -165,7 +165,7 @@ async def add_mentorado_to_a_mentoria(
     dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR, UserType.MENTORADO]))]
 )
 async def remove_mentorado_from_a_mentoria(
-    mentorado_data: MentoradoEmail,
+    mentorado_data: Optional[MentoradoEmail] = Body(None),
     mentoria_id: int = Path(..., ge=1),
     current_user: TokenData = Depends(get_current_user),
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)

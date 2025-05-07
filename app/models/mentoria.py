@@ -50,7 +50,7 @@ class MentoriaInDB(MentoriaBase):
     descricao: Optional[str]
 
 class MentoradoEmail(BaseModel):
-    mentorado_email: Optional[EmailStr]
+    mentorado_email: EmailStr
 
 class TokenData(BaseModel):
     username: EmailStr

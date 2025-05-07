@@ -122,10 +122,10 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
     *   **Endpoint:** `DELETE /mentorias/{mentoria_id}/mentorados`
     *   **Autorização:** JWT (Tipo: `Mentor` - proprietário da mentoria, `Mentorado` - Se estiver inscrito)
     *   **Path Parameter:** `mentoria_id` (integer) - ID da mentoria.
-    *   **Request Body (parcialmente, apenas campos a atualizar):**
+    *   **Request Body (Opcional, somente necessário com JWT tipo Mentor):**
         ```json
         {
-          "Mentorado_email" : "exemplo@exemplo.com" //Opcional, somente precisa ser enviado pelo Mentor
+          "Mentorado_email" : "exemplo@exemplo.com" 
         }
         ```
     *   **Response:** `204 NO CONTENT`
