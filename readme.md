@@ -105,6 +105,11 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
     *   **Path Parameter:** `mentoria_id` (integer) - ID da mentoria.
     *   **Response:** `204 NO CONTENT`
 
+6.  **Listar Mentorias por Topico**
+    *   **Endpoint:** `GET /mentorias`
+    *   **Autorização:** JWT (Qualquer tipo de usuário autenticado)
+    *   **Response:** `200 OK` - Lista de objetos de mentoria do tópico.
+
 ### Gerenciamento de Mentorados em uma Mentoria
 
 1.  **Adicionar Mentorado a uma Mentoria**

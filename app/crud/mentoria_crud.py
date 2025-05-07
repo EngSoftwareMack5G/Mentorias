@@ -47,6 +47,21 @@ async def get_mentorias_by_mentor(
 
         return [MentoriaInDB.model_validate(dict(row)) for row in rows]
 
+async def get_mentorias_by_topic(
+    db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
+    topic: str
+) -> List[MentoriaInDB]:
+    async with db_conn_manager as conn:
+        query = """
+            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
+            FROM mentorias
+            WHERE topico = $1 ORDER BY data_hora DESC;
+        """
+        rows = await conn.fetch(query, topic)
+
+        return [MentoriaInDB.model_validate(dict(row)) for row in rows]
+
+
 async def get_mentoria_by_id(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
     mentoria_id: int

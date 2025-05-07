@@ -58,6 +58,21 @@ async def list_mentorias_for_mentor(
     )
     return mentorias
 
+@router.get(
+        "/topico/{topic}",
+        response_model=List[MentoriaInDB],
+)
+async def list_mentorias_by_topic(
+    topic: str = Path(...),
+    current_user: TokenData = Depends(get_current_user),
+    conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
+):
+    mentorias = await mentoria_crud.get_mentorias_by_topic(
+        db_conn_manager=conn_manager,
+        topic=topic
+    )
+    return mentorias
+
 
 @router.get(
     "/{mentoria_id}",
