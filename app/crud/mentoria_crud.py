@@ -14,9 +14,9 @@ async def create_mentoria(
 ) -> Optional[MentoriaInDB]:
     async with db_conn_manager as conn: # <--- USE ASYNC WITH AQUI
         query = """
-            INSERT INTO mentorias (mentor_email, data_hora, duracao_minutos, status, topico)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, mentor_email, data_hora, duracao_minutos, status, topico;
+            INSERT INTO mentorias (mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao;
         """
         row = await conn.fetchrow( # <--- Agora conn é o objeto de conexão
             query,
@@ -24,7 +24,9 @@ async def create_mentoria(
             mentoria.data_hora,
             mentoria.duracao_minutos,
             mentoria.status.value,
-            mentoria.topico
+            mentoria.topico,
+            mentoria.titulo,
+            mentoria.descricao
         )
 
         row = dict(row) if row else None
@@ -37,7 +39,7 @@ async def get_mentorias_by_mentor(
 ) -> List[MentoriaInDB]:
     async with db_conn_manager as conn:
         query = """
-            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico
+            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
             FROM mentorias
             WHERE mentor_email = $1 ORDER BY data_hora DESC;
         """
@@ -51,7 +53,7 @@ async def get_mentoria_by_id(
 ) -> Optional[MentoriaInDB]:
     async with db_conn_manager as conn:
         query = """
-            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico
+            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
             FROM mentorias
             WHERE id = $1;
         """
@@ -86,7 +88,7 @@ async def update_mentoria(
         if not update_fields:
             # Se não houver campos para atualizar, podemos buscar e retornar a mentoria completa
             full_mentoria_record = await conn.fetchrow(
-                "SELECT id, mentor_email, data_hora, duracao_minutos, status, topico FROM mentorias WHERE id = $1;",
+                "SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao FROM mentorias WHERE id = $1;",
                 mentoria_id
             )
 
@@ -112,7 +114,7 @@ async def update_mentoria(
             UPDATE mentorias
             SET {', '.join(set_clauses)}
             WHERE id = ${param_idx} AND mentor_email = ${param_idx + 1}
-            RETURNING id, mentor_email, data_hora, duracao_minutos, status, topico;
+            RETURNING id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao;
         """
         row = await conn.fetchrow(query, *values)
         

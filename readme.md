@@ -22,7 +22,9 @@ As seguintes tabelas são utilizadas:
         data_hora TIMESTAMP NOT NULL,
         duracao_minutos INTEGER NOT NULL,
         status VARCHAR(20) NOT NULL CHECK (status IN ('agendada', 'concluída', 'cancelada', 'disponível')),
-        topico TEXT NOT NULL
+        topico VARCHAR(20) NOT NULL CHECK (topico IN ('carreiras', 'lideranças', 'financeiro', 'negócios')),
+        titulo TEXT NOT NULL,
+        descricao TEXT
     );
     ```
 
@@ -65,8 +67,10 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
         {
           "data_hora": "2024-08-15T14:00:00Z", // Formato ISO 8601 UTC
           "duracao_minutos": 60,
-          "status": "agendada", // ou 'disponível'
-          "topico": "Introdução ao FastAPI"
+          "status": "agendada", //ou 'disponível'
+          "topico": "carreiras", //carreiras, lideranças, financeiro ou negócios
+          "titulo": "TITULO",
+          "descrição": "Descrição" //Pode ser nulo
         }
         ```
     *   **Response:** `201 CREATED` - Objeto da mentoria criada.
