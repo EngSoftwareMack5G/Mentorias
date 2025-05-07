@@ -34,7 +34,7 @@ async def create_new_mentoria(
 ):
     created_mentoria = await mentoria_crud.create_mentoria(
         # Passe o conn_manager para o parâmetro db_conn_manager da função CRUD
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria=mentoria_data,
         mentor_email=current_user.username
     )
@@ -85,7 +85,7 @@ async def get_single_mentoria(
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     mentoria = await mentoria_crud.get_mentoria_by_id(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id
     )
     if not mentoria:
@@ -105,7 +105,7 @@ async def update_existing_mentoria(
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     updated_mentoria = await mentoria_crud.update_mentoria(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id,
         mentoria_update=mentoria_data,
         current_mentor_email=current_user.username
@@ -128,7 +128,7 @@ async def delete_existing_mentoria(
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     success = await mentoria_crud.delete_mentoria(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id,
         current_mentor_email=current_user.username
     )
@@ -142,19 +142,17 @@ async def delete_existing_mentoria(
 @router.post(
     "/{mentoria_id}/mentorados",
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR]))]
+    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTORADO]))]
 )
 async def add_mentorado_to_a_mentoria(
-    mentorado_data: MentoradoEmail,
     mentoria_id: int = Path(..., ge=1),
-    current_user: TokenData = Depends(get_current_active_mentor),
+    current_user: TokenData = Depends(get_current_user),
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     success = await mentoria_crud.add_mentorado_to_mentoria(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id,
-        mentorado_email_obj=mentorado_data,
-        current_mentor_email=current_user.username
+        mentorado_email=current_user.username
     )
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentoria not found or not authorized, or mentorado could not be added/already in mentoria")
@@ -164,19 +162,20 @@ async def add_mentorado_to_a_mentoria(
 @router.delete(
     "/{mentoria_id}/mentorados",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR]))]
+    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR, UserType.MENTORADO]))]
 )
 async def remove_mentorado_from_a_mentoria(
     mentorado_data: MentoradoEmail,
     mentoria_id: int = Path(..., ge=1),
-    current_user: TokenData = Depends(get_current_active_mentor),
+    current_user: TokenData = Depends(get_current_user),
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     success = await mentoria_crud.remove_mentorado_from_mentoria(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id,
         mentorado_email_obj=mentorado_data,
-        current_mentor_email=current_user.username
+        current_user_email=current_user.username,
+        current_user_type=current_user.type
     )
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentoria not found, mentorado not in mentoria, or not authorized")

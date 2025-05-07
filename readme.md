@@ -114,22 +114,20 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
 
 1.  **Adicionar Mentorado a uma Mentoria**
     *   **Endpoint:** `POST /mentorias/{mentoria_id}/mentorados`
-    *   **Autorização:** JWT (Tipo: `Mentor` - proprietário da mentoria)
+    *   **Autorização:** JWT (Tipo: `Mentorado` - Usuário de mentorado)
     *   **Path Parameter:** `mentoria_id` (integer) - ID da mentoria.
-    *   **Request Body:**
-        ```json
-        {
-          "mentorado_email": "mentorado@example.com"
-        }
-        ```
     *   **Response:** `201 CREATED` - Mensagem de sucesso.
 
 2.  **Remover Mentorado de uma Mentoria**
     *   **Endpoint:** `DELETE /mentorias/{mentoria_id}/mentorados`
-    *   **Autorização:** JWT (Tipo: `Mentor` - proprietário da mentoria)
+    *   **Autorização:** JWT (Tipo: `Mentor` - proprietário da mentoria, `Mentorado` - Se estiver inscrito)
     *   **Path Parameter:** `mentoria_id` (integer) - ID da mentoria.
-    *   **Query Parameter:** `mentorado_email` (string) - Email do mentorado a ser removido.
-        *   Exemplo: `/mentorias/1/mentorados?mentorado_email=aluno@example.com`
+    *   **Request Body (parcialmente, apenas campos a atualizar):**
+        ```json
+        {
+          "Mentorado_email" : "exemplo@exemplo.com" //Opcional, somente precisa ser enviado pelo Mentor
+        }
+        ```
     *   **Response:** `204 NO CONTENT`
 
 3.  **Listar Mentorados de uma Mentoria**

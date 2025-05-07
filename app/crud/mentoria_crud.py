@@ -166,50 +166,54 @@ async def delete_mentoria(
 async def add_mentorado_to_mentoria(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
     mentoria_id: int,
-    mentorado_email_obj: MentoradoEmail,
-    current_mentor_email: str
+    mentorado_email: str
 ) -> bool:
     async with db_conn_manager as conn:
-        # Verificar se a mentoria existe e pertence ao mentor atual
-        mentoria_record = await conn.fetchrow(
-            "SELECT mentor_email FROM mentorias WHERE id = $1;",
-            mentoria_id
-        )
-        if not mentoria_record or mentoria_record['mentor_email'] != current_mentor_email:
-            return False
-
         query_insert = """
             INSERT INTO mentoria_mentorados (mentoria_id, mentorado_email)
             VALUES ($1, $2)
-            ON CONFLICT (mentoria_id, mentorado_email) DO NOTHING;
+            ON CONFLICT (mentoria_id, mentorado_email) DO NOTHING
+            RETURNING mentoria_id, mentorado_email;
         """
-        await conn.execute(query_insert, mentoria_id, mentorado_email_obj.mentorado_email)
+        result = await conn.fetchrow(query_insert, mentoria_id, mentorado_email)
 
-        check_query = "SELECT 1 FROM mentoria_mentorados WHERE mentoria_id = $1 AND mentorado_email = $2"
-        exists = await conn.fetchval(check_query, mentoria_id, mentorado_email_obj.mentorado_email)
-        return exists is not None
+        return result is not None
+
 
 # ... e para as outras funções de associação ...
 async def remove_mentorado_from_mentoria(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
     mentoria_id: int,
     mentorado_email_obj: MentoradoEmail,
-    current_mentor_email: str
+    current_user_email: str,
+    current_user_type: UserType
 ) -> bool:
     async with db_conn_manager as conn:
-        mentoria_record = await conn.fetchrow(
-            "SELECT mentor_email FROM mentorias WHERE id = $1;",
-            mentoria_id
-        )
-        if not mentoria_record or mentoria_record['mentor_email'] != current_mentor_email:
-            return False
+        if(current_user_type == UserType.MENTOR):
+            mentoria_record = await conn.fetchrow(
+                "SELECT mentor_email FROM mentorias WHERE id = $1;",
+                mentoria_id
+            )
+            if not current_user_email:
+                return False
 
-        query = """
-            DELETE FROM mentoria_mentorados
-            WHERE mentoria_id = $1 AND mentorado_email = $2
-            RETURNING mentoria_id;
-        """
-        deleted_id = await conn.fetchval(query, mentoria_id, mentorado_email_obj.mentorado_email)
+            if not mentoria_record or mentoria_record['mentor_email'] != current_user_email:
+                return False
+
+            query = """
+                DELETE FROM mentoria_mentorados
+                WHERE mentoria_id = $1 AND mentorado_email = $2
+                RETURNING mentoria_id;
+            """
+            deleted_id = await conn.fetchval(query, mentoria_id, mentorado_email_obj.mentorado_email)
+        else:
+            query = """
+                DELETE FROM mentoria_mentorados
+                WHERE mentoria_id = $1 AND mentorado_email = $2
+                RETURNING mentoria_id;
+            """
+            deleted_id = await conn.fetchval(query, mentoria_id, current_user_email)
+
         return deleted_id is not None
 
 async def get_mentorados_for_mentoria(
