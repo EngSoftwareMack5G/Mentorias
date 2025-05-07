@@ -75,10 +75,10 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
         ```
     *   **Response:** `201 CREATED` - Objeto da mentoria criada.
 
-2.  **Listar Mentorias do Mentor**
+2.  **Listar Mentorias do Usuário**
     *   **Endpoint:** `GET /mentorias`
-    *   **Autorização:** JWT (Tipo: `Mentor`)
-    *   **Response:** `200 OK` - Lista de objetos de mentoria do mentor autenticado.
+    *   **Autorização:** JWT (Tipo: `Mentor`, `Mentorado`)
+    *   **Response:** `200 OK` - Lista de objetos de mentoria do usuário autenticado, se for mentor, lista as mentorias que criou, se for mentorado, lista as mentorias inscritas.
 
 3.  **Buscar Mentoria Específica**
     *   **Endpoint:** `GET /mentorias/{mentoria_id}`

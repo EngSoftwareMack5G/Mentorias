@@ -1,7 +1,7 @@
 from typing import List, Optional
 import asyncpg
 from pydantic import EmailStr
-from app.models.mentoria import MentoriaCreate, MentoriaUpdate, MentoriaInDB, MentoradoEmail, MentoriaStatus
+from app.models.mentoria import MentoriaCreate, MentoriaUpdate, MentoriaInDB, MentoradoEmail, MentoriaStatus, UserType
 from enum import Enum
 from contextlib import _AsyncGeneratorContextManager # Para type hinting, se desejar
 
@@ -33,17 +33,25 @@ async def create_mentoria(
 
         return MentoriaInDB.model_validate(row) if row else None
 
-async def get_mentorias_by_mentor(
+async def get_mentorias_by_user(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
-    mentor_email: str
+    email: str,
+    type: UserType
 ) -> List[MentoriaInDB]:
     async with db_conn_manager as conn:
-        query = """
-            SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
-            FROM mentorias
-            WHERE mentor_email = $1 ORDER BY data_hora DESC;
-        """
-        rows = await conn.fetch(query, mentor_email)
+        if(type == UserType.MENTOR):
+            query = """
+                SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
+                FROM mentorias
+                WHERE mentor_email = $1 ORDER BY data_hora DESC;
+            """
+        else:
+            query = """
+                SELECT id, mentor_email, data_hora, duracao_minutos, status, topico, titulo, descricao
+                FROM mentorias
+                WHERE id IN (SELECT mentoria_id FROM mentoria_mentorados WHERE mentorado_email = $1) ORDER BY data_hora DESC;
+            """
+        rows = await conn.fetch(query, email)
 
         return [MentoriaInDB.model_validate(dict(row)) for row in rows]
 

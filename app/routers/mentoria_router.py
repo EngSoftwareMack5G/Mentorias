@@ -46,15 +46,16 @@ async def create_new_mentoria(
 @router.get(
     "/",
     response_model=List[MentoriaInDB],
-    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR]))]
+    dependencies=[Depends(RoleChecker(allowed_roles=[UserType.MENTOR, UserType.MENTORADO]))]
 )
-async def list_mentorias_for_mentor(
-    current_user: TokenData = Depends(get_current_active_mentor),
+async def list_mentorias(
+    current_user: TokenData = Depends(get_current_user),
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
-    mentorias = await mentoria_crud.get_mentorias_by_mentor(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUI
-        mentor_email=current_user.username
+    mentorias = await mentoria_crud.get_mentorias_by_user(
+        db_conn_manager=conn_manager,
+        email=current_user.username,
+        type = current_user.type
     )
     return mentorias
 
