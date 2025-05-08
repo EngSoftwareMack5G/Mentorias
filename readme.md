@@ -142,6 +142,17 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
         ]
         ```
 
+4.  **Mentorado em uma Mentoria**
+    *   **Endpoint:** `GET /mentorias/{mentoria_id}/inscrito`
+    *   **Autorização:** JWT (Qualquer tipo de usuário autenticado)
+    *   **Path Parameter:** `mentoria_id` (integer) - ID da mentoria.
+    *   **Response:** `200 OK` - JSON com o termo inscrito.
+        ```json
+        {
+            "inscrito": true //ou false
+        }
+        ```
+
 ### Autenticação (Exemplo para Teste)
 
 *   **Gerar Token de Teste (APENAS DESENVOLVIMENTO):**
