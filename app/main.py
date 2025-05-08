@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.routers import mentoria_router
@@ -26,6 +27,14 @@ app = FastAPI(
 )
 
 app.include_router(mentoria_router.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ou especifique sua origem, por exemplo: ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],  # ou ["GET", "POST", "PUT", "DELETE"]
+    allow_headers=["*"],  # ou ["Authorization", "Content-Type"]
+)
 
 @app.get("/", tags=["Root"])
 async def read_root():
