@@ -6,7 +6,7 @@ import asyncpg # Para o type hint da dependência de conexão
 
 from app.models.mentoria import (
     MentoriaCreate, MentoriaUpdate, MentoriaInDB,
-    MentoradoEmail, TokenData, UserType
+    MentoradoEmail, TokenData, UserType, MentoradoInMentoria
 )
 from app.crud import mentoria_crud # Importa o módulo
 from app.auth.security import get_current_active_mentor, RoleChecker, get_current_user
@@ -192,9 +192,26 @@ async def list_mentorados_in_mentoria(
     conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
 ):
     mentorados_emails = await mentoria_crud.get_mentorados_for_mentoria(
-        db_conn_manager=conn_manager, # <--- CORRIGIDO AQUIs
+        db_conn_manager=conn_manager,
         mentoria_id=mentoria_id
     )
     if mentorados_emails is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentoria not found")
     return mentorados_emails
+
+@router.get(
+    "/{mentoria_id}/inscrito",
+    response_model=MentoradoInMentoria
+)
+async def list_mentorados_in_mentoria(
+    mentoria_id: int = Path(..., ge=1),
+    current_user: TokenData = Depends(get_current_user),
+    conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection] = Depends(get_db_connection)
+):
+    inscrito = await mentoria_crud.mentorado_in_mentoria(
+        db_conn_manager=conn_manager,
+        mentoria_id=mentoria_id
+    )
+    if inscrito is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentoria not found")
+    return inscrito

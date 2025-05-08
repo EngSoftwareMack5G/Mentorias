@@ -52,6 +52,9 @@ class MentoriaInDB(MentoriaBase):
 class MentoradoEmail(BaseModel):
     mentorado_email: EmailStr
 
+class MentoradoInMentoria(BaseModel):
+    inscrito: bool
+
 class TokenData(BaseModel):
     username: EmailStr
     type: UserType # Usaremos este enum para verificar o tipo de usuário

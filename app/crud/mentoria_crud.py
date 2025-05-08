@@ -1,7 +1,7 @@
 from typing import List, Optional
 import asyncpg
 from pydantic import EmailStr
-from app.models.mentoria import MentoriaCreate, MentoriaUpdate, MentoriaInDB, MentoradoEmail, MentoriaStatus, UserType
+from app.models.mentoria import MentoriaCreate, MentoriaUpdate, MentoriaInDB, MentoradoEmail, MentoriaStatus, UserType, MentoradoInMentoria
 from enum import Enum
 from contextlib import _AsyncGeneratorContextManager # Para type hinting, se desejar
 
@@ -231,3 +231,18 @@ async def get_mentorados_for_mentoria(
         """
         rows = await conn.fetch(query, mentoria_id)
         return [row['mentorado_email'] for row in rows]
+    
+async def mentorado_in_mentoria(
+    db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
+    mentoria_id: int
+) -> MentoradoInMentoria:
+    async with db_conn_manager as conn:
+        query = """
+            SELECT mentorado_email FROM mentoria_mentorados
+            WHERE mentoria_id = $1;
+        """
+        row = await conn.fetchrow(query, mentoria_id)
+
+        row = { "inscrito": row is not None }
+
+        return MentoradoInMentoria.model_validate(row) if row else None
