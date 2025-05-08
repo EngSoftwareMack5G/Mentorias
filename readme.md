@@ -106,7 +106,7 @@ A maioria das operações de escrita e gerenciamento exige que o tipo de usuári
     *   **Response:** `204 NO CONTENT`
 
 6.  **Listar Mentorias por Topico**
-    *   **Endpoint:** `GET /mentorias`
+    *   **Endpoint:** `GET /topico/{nome_topico}`
     *   **Autorização:** JWT (Qualquer tipo de usuário autenticado)
     *   **Response:** `200 OK` - Lista de objetos de mentoria do tópico.
 
