@@ -22,7 +22,7 @@ As seguintes tabelas são utilizadas:
         data_hora TIMESTAMP NOT NULL,
         duracao_minutos INTEGER NOT NULL,
         status VARCHAR(20) NOT NULL CHECK (status IN ('agendada', 'concluída', 'cancelada', 'disponível')),
-        topico VARCHAR(20) NOT NULL CHECK (topico IN ('carreiras', 'lideranças', 'financeiro', 'negócios')),
+        topico VARCHAR(20) NOT NULL CHECK (topico IN ('carreiras', 'liderancas', 'financeiro', 'negocios')),
         titulo TEXT NOT NULL,
         descricao TEXT
     );

@@ -11,9 +11,9 @@ class MentoriaStatus(str, Enum):
 
 class MentoriaTopic(str, Enum):
     CARREIRAS = "carreiras"
-    LIDERANCAS = "lideranças"
+    LIDERANCAS = "liderancas"
     FINANCEIRO = "financeiro"
-    NEGOCIOS = "negócios"
+    NEGOCIOS = "negocios"
 
 class UserType(str, Enum):
     MENTOR = "Mentor"
