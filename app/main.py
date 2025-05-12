@@ -49,7 +49,3 @@ async def generate_test_token(email: str = "mentor@example.com", user_type: User
     token_data = {"username": email, "type": user_type.value}
     token = create_access_token(data=token_data)
     return {"access_token": token, "token_type": "bearer"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
