@@ -234,14 +234,15 @@ async def get_mentorados_for_mentoria(
     
 async def mentorado_in_mentoria(
     db_conn_manager: _AsyncGeneratorContextManager[asyncpg.Connection],
-    mentoria_id: int
+    mentoria_id: int,
+    current_user_email: str
 ) -> MentoradoInMentoria:
     async with db_conn_manager as conn:
         query = """
             SELECT mentorado_email FROM mentoria_mentorados
-            WHERE mentoria_id = $1;
+            WHERE mentoria_id = $1 AND mentorado_email = $2;
         """
-        row = await conn.fetchrow(query, mentoria_id)
+        row = await conn.fetchrow(query, mentoria_id, current_user_email)
 
         row = { "inscrito": row is not None }
 

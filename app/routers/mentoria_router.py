@@ -210,7 +210,8 @@ async def list_mentorados_in_mentoria(
 ):
     inscrito = await mentoria_crud.mentorado_in_mentoria(
         db_conn_manager=conn_manager,
-        mentoria_id=mentoria_id
+        mentoria_id=mentoria_id,
+        current_user_email=current_user.username
     )
     if inscrito is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentoria not found")
